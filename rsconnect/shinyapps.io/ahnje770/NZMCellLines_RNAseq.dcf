@@ -1,0 +1,12 @@
+name: NZMCellLines_RNAseq
+title: NZMCellLines_RNAseq
+username:
+account: ahnje770
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2069521
+bundleId: 3150937
+url: https://ahnje770.shinyapps.io/NZMCellLines_RNAseq/
+when: 1589533345.51297
+asMultiple: FALSE
+asStatic: FALSE

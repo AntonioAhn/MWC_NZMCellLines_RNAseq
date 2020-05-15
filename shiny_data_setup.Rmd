@@ -1,0 +1,91 @@
+---
+title: "Shiny data setup"
+author: "Antonio Ahn"
+date: "23/04/2020"
+output: html_document
+---
+
+
+# NZM cell lines dataset # total same names (74 samples)
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+# loading the RNAseq (NZM_RNAseqdata_boxplot) and mutation datasets (NZM_mutation_info)
+
+# Information: NZM cell lines dataset has 74 melanoma samples
+# All_NZM_tpm_GeneName_tidied.csv is the "tidied" up dataset. Tidied by removing rows with NA for gene symbol 
+# originally there was 63677  rows but 37947 weres NAs, 25730 were not NAs
+# Moreover, 1117 rows were gene name duplicates. Out of the duplicates, the gene with the higher Median Absolute Deviation was selected. 
+# Thus 63677 (total) - 37947 (NAs) - 1117 (duplicates) generated 24613 genes for the final dataset
+NZM_RNAseqdata_boxplot <- read_csv(file = "data/All_NZM_tpm_GeneName_tidied.csv")
+#  24613 rows (for genes), 76 columns (first 2 columns are "ensemblID" and "symbols")
+dim(NZM_RNAseqdata_boxplot)
+
+# loading the sequenom mutation datasets (NZM_mutation_info)
+NZM_mutation_info <- read_csv(file="data/NZMcellllines_mutations_info_sequenom_tidied.csv")
+NZM_mutation_info %>% dim
+
+## -----------------------------------------------------------------------------
+### -----------------------------------------------------------------------------
+# NZM cell line name changes 
+# underscore is in the NZM names are removed except for NZM91_1 and NZM91_2
+colnames(NZM_RNAseqdata_boxplot) 
+colnames(NZM_RNAseqdata_boxplot)  <- gsub("_", "",colnames(NZM_RNAseqdata_boxplot))
+# NZM91_1 and NZM91_2 are re-added
+colnames(NZM_RNAseqdata_boxplot)[colnames(NZM_RNAseqdata_boxplot) %in% c("NZM911", ("NZM912"))] <- c("NZM91_1", "NZM91_2")
+
+# "NZM1" "NZM2" "NZM3" "NZM4" "NZM7" are changed to NZM01 and NZM07 etc. 
+grep("NZM.$", colnames(NZM_RNAseqdata_boxplot), value =TRUE)
+colnames(NZM_RNAseqdata_boxplot)[grep("NZM.$", colnames(NZM_RNAseqdata_boxplot))] <- c("NZM01", "NZM02", "NZM03", "NZM04", "NZM07", "NZM06")
+
+# There are also replicates for NZM92
+colnames(NZM_RNAseqdata_boxplot)[colnames(NZM_RNAseqdata_boxplot) == "NZM92"] <- c("NZM92_1", "NZM92_2")
+
+### -----------------------------------------------------------------------------
+### -----------------------------------------------------------------------------
+
+NZM_all_samples <- select(NZM_RNAseqdata_boxplot, NZM01:NZM97) %>% colnames
+table(NZM_all_samples == NZM_mutation_info$NZM_matched)
+
+# remove the "ensemblID" column
+NZM_RNAseqdata_corplot <- NZM_RNAseqdata_boxplot[,-1]
+NZM_RNAseqdata_boxplot <- NZM_RNAseqdata_boxplot[,-1]
+
+# tidy up the NZM_RNAseqdata_boxplot dataframe for boxplots
+NZM_RNAseqdata_boxplot <- gather(NZM_RNAseqdata_boxplot, key = samples, value = values, -c(symbols))
+NZM_RNAseqdata_boxplot$values <- log2(NZM_RNAseqdata_boxplot$values + 1)
+NZM_RNAseqdata_boxplot$samples <- NZM_RNAseqdata_boxplot$samples %>% factor
+
+##------------
+# adding BRAF/NRAS/WT mutation information to the boxplot dataframe
+NZM_RNAseqdata_boxplot$mut.subtype <- ifelse(NZM_RNAseqdata_boxplot$samples %in% filter(NZM_mutation_info, mut.subtype == "BRAF")$NZM_matched, "BRAF",
+                                              ifelse(NZM_RNAseqdata_boxplot$samples %in% filter(NZM_mutation_info, mut.subtype == "NRAS")$NZM_matched, "NRAS", 
+                                                     ifelse(NZM_RNAseqdata_boxplot$samples %in% filter(NZM_mutation_info, mut.subtype == "UD")$NZM_matched, "UD", "WT")))
+
+# factoring the mutation info
+NZM_RNAseqdata_boxplot$mut.subtype <- factor(NZM_RNAseqdata_boxplot$mut.subtype, levels = c("BRAF", "NRAS", "WT", "UD"))
+
+##------------
+# adding TERT mutation information to the boxplot dataframe
+NZM_RNAseqdata_boxplot$TERT.subtype <- ifelse(NZM_RNAseqdata_boxplot$samples %in% filter(NZM_mutation_info, TERT == "C228T")$NZM_matched, "C228T",
+                                              ifelse(NZM_RNAseqdata_boxplot$samples %in% filter(NZM_mutation_info, TERT == "C250T")$NZM_matched, "C250T", 
+                                                     ifelse(NZM_RNAseqdata_boxplot$samples %in% filter(NZM_mutation_info, TERT == "C228T/C250T")$NZM_matched, "C228T/C250T", 
+                                                            ifelse(NZM_RNAseqdata_boxplot$samples %in% filter(NZM_mutation_info, TERT == "WT")$NZM_matched, "WT", "UD"))))
+# factoring the mutation info
+NZM_RNAseqdata_boxplot$TERT.subtype <- factor(NZM_RNAseqdata_boxplot$TERT.subtype, levels = c("C228T", "C250T", "C228T/C250T", "WT", "UD"))
+```
+
+
+# save data
+
+```{r eval=FALSE}
+save.image(file = "data/NZM_data.RData")
+
+load("data/NZM_data.RData")
+```
+
+
+
