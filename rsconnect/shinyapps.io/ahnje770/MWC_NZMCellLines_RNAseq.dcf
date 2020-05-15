@@ -5,8 +5,8 @@ account: ahnje770
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2304175
-bundleId: 3150967
+bundleId: 3151150
 url: https://ahnje770.shinyapps.io/MWC_NZMCellLines_RNAseq/
-when: 1589533882.11044
+when: 1589537769.96623
 asMultiple: FALSE
 asStatic: FALSE

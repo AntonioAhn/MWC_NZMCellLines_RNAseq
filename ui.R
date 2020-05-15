@@ -20,7 +20,7 @@ tagList(dashboardPage(skin = "blue",
             from = "Source Code",
             message = "Available on Github",
             time = "Update at 2020-04-13",
-            href = "https://github.com/AntonioAhn/"
+            href = "https://github.com/AntonioAhn/MWC_NZMCellLines_RNAseq"
         ),
         messageItem(
             from = "About Us",
