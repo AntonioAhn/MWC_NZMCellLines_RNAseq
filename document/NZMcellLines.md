@@ -1,19 +1,12 @@
 # Information on the NZM cell lines 
 
-Over the last 20 years a unique series of cell lines (NZM cell lines) from metastatic melanomas (MMs) occurring in New Zealand patients has been developed (25). To date the NZM cell lines have been characterized for cell cycle time, drug sensitivity, and driver gene mutation status.
-
-
-# Information on batches
-
-batch1 and batch2
-
+Over the last 20 years a unique series of cell lines (called NZM cell lines) from metastatic melanomas (MMs) occurring in New Zealand patients has been developed. 
 
 # RNA-seq information 
 
-- TPM normalised
-- What was the sequencing depth? Paired or single end? 
-- Alignment method? HISAT2? 
-- 
+- TPM normalised and log2 transformed
+- Paired end sequencing with 40 million reads
+- HISAT2 alignment
 
 
 
